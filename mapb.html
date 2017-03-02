@@ -13,11 +13,11 @@
 	<link href="css/main.css" rel="stylesheet">
 	<link href="css/fonts.css" rel="stylesheet">
 	<style>
-    .populacao, .demanda {
+    .populacao, .demanda, .municipio {
       stroke: #fff;
       stroke-width: 0.8px;
     }
-	</style>
+ 	</style>
 </head>
 <body>
 
@@ -78,7 +78,7 @@
     var path = d3.geoPath().projection(projection);
 
     var populacaoScale = d3.scaleThreshold();
-    var demandaScale = d3.scaleLinear();
+    var demandaScale = d3.scaleThreshold();
 
 		d3.queue()
 			.defer(d3.json, "data/topo_pb.json")
@@ -92,14 +92,17 @@
 
 			populacaoScale
       	.domain([5000, 10000, 30000, 50000, 100000])
-				.range([d3.rgb(8, 48, 107, 0.2), d3.rgb(8, 48, 107, 0.4), d3.rgb(8, 48, 107, 0.6), d3.rgb(8, 48, 107, 0.8), d3.rgb(8, 48, 107, 1)]);
+     			.range(d3.schemeBrBG[5]);
+     			//.range([d3.rgb(0, 0, 153, 0.2), d3.rgb(0, 0, 153, 0.4), d3.rgb(0, 0, 153, 0.6), d3.rgb(0, 0, 153, 0.8), d3.rgb(0, 0, 153, 1)]);
 			demandaScale
         .domain([d3.min(populacaoXdemanda, function(d) { return +d.demanda }), d3.max(populacaoXdemanda, function(d) { return +d.demanda })])
-    		.range(d3.schemeOranges[9]);
+    		.range([d3.rgb(0, 0, 253, 0.2), d3.rgb(0, 0, 253, 0.4), d3.rgb(0, 0, 253, 0.6), d3.rgb(0, 0, 253, 0.8), d3.rgb(0, 0, 253, 1)]);
+    		//.range([d3.rgb(128, 255, 0, 0.2), d3.rgb(128, 255, 0,  0.4), d3.rgb(128, 255, 0,  0.6), d3.rgb(128, 255, 0,  0.8), d3.rgb(128, 255, 0,  1)]);
 
       svg.selectAll(".municipios")
         .data(municipios.features)
       .enter().append("path")
+        .attr("class", function(d) { return "municipio "})
         .attr("id", function(d) { return "populacao-"+d.properties.codigo_ibg; })
         .attr("d", path)
         .style("opacity", 0.5);
@@ -107,6 +110,7 @@
       svg.selectAll(".municipios")
         .data(municipios.features)
       .enter().append("path")
+      	.attr("class", function(d) { return "municipio "})
         .attr("id", function(d) { return "demanda-"+d.properties.codigo_ibg; })
         .attr("d", path)
         .style("opacity", 0.5);
